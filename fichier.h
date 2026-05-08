@@ -2,7 +2,7 @@
 #define DRONE_H
 
 /* ============================================
- * drone.h
+ * fichier.h
  * Declarations de la structure et des fonctions
  * Systeme de detection de collision UAV
  * ============================================ */

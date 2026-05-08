@@ -104,15 +104,7 @@ float plusProche(
 
     /* -----------------------------------------------
      * BANDE CENTRALE : etape cle pour O(n log n)
-     * -----------------------------------------------
-     * Apres les deux recursions, il peut exister une
-     * paire plus proche dont un drone est a gauche et
-     * l'autre a droite de la frontiere xMid.
-     *
-     * On ne garde que les drones dont |x - xMid| < delta
-     * car au-dela, leur distance est forcement >= delta.
-     * delta = sqrt(dmin) est la meilleure distance connue.
-     * ----------------------------------------------- */
+     */
     float delta = sqrtf(dmin);
 
     struct Drone **bande =
@@ -138,33 +130,6 @@ float plusProche(
     /* Necesaire pour que la limite a 7 soit valide */
     qsort(bande, nb, sizeof(struct Drone *), trierY);
 
-    /* -----------------------------------------------
-     * PREUVE GEOMETRIQUE : pourquoi j <= i + 7 ?
-     * -----------------------------------------------
-     * La bande fait 2*delta de large (delta de chaque
-     * cote de xMid) et les drones sont tries par Y.
-     *
-     * Pour un drone i, on cherche un drone j tel que
-     * dist(i,j) < delta. Cela impose :
-     *   |y_j - y_i| < delta  (sinon dist >= delta)
-     *
-     * Donc j ne peut se trouver que dans la fenetre
-     * verticale [y_i, y_i + delta].
-     *
-     * Dans ce rectangle de dimensions 2*delta x delta,
-     * chaque sous-carre delta x delta (gauche ou droite)
-     * contient au maximum 4 drones sans qu'aucune paire
-     * interne ne soit a distance < delta (propriete des
-     * recursions deja faites).
-     *
-     * Les deux sous-carres ensemble = 8 positions max.
-     * En excluant le drone i lui-meme : 7 voisins max.
-     *
-     * Conclusion : la boucle interne fait au plus 7
-     * iterations par drone => bande en O(nb) => O(n).
-     * Avec le tri en O(n log n) et log n niveaux de
-     * recursion : complexite totale O(n log n). 
-     * ----------------------------------------------- */
     for (int i = 0; i < nb - 1; i++) {
 
         for (int j = i + 1; j < nb && j <= i + 7; j++) {

@@ -1,112 +1,123 @@
-Système de Prévention des Collisions pour Essaim d'UAV
+# UAV Collision System
 
-Table des matières
+Projet réalisé en C dans le cadre du module de **Programmation Avancée en C**.  
+École des Sciences de l'Information — Pr. Tarik HOUICHIME
 
-Informations Générales
+---
 
-Technologies utilisées
+## Objectif du projet
 
-Installation
+Le système simule un essaim de **10 000 drones autonomes** et recherche les deux drones
+les plus proches afin de prévenir les collisions aériennes.
 
-Collaboration
+L'objectif principal est d'optimiser les performances tout en respectant des contraintes strictes :
 
-FAQ
+- allocation dynamique avec `malloc`
+- interdiction des crochets `[]`
+- utilisation de l'arithmétique des pointeurs
+- optimisation des comparaisons grâce au tri
 
-Informations Générales
+---
 
-Statut : Prêt pour la production / Livrable 1 Validé
+## Structure utilisée
 
-Ce projet consiste en un module de sécurité critique conçu pour la gestion d'un essaim de 10 000 micro-drones autonomes (UAV). Dans un environnement où chaque milliseconde compte, cet algorithme identifie la paire de drones la plus proche pour éviter une collision en chaîne catastrophique.
+```c
+struct Drone {
+    int   id;
+    float x;
+    float y;
+    float z;
+};
+```
 
-Contraintes industrielles respectées :
+Chaque drone possède :
+- un identifiant unique
+- une position 3D dans l'espace
 
-Arithmétique des pointeurs obligatoire : Navigation mémoire sans aucun crochet [] pour garantir une compatibilité avec les compilateurs de sécurité embarqués et optimiser l'accès au tas (RAM).
+---
 
-Optimisation Asymptotique : Passage d'une architecture quadratique $O(n^2)$ à une approche hybride basée sur le tri $O(n \log n)$ pour respecter les limites strictes du processeur temps réel.
+## Fonctionnement du programme
 
-Capture d'écran
+Le programme effectue les étapes suivantes :
 
-[Image d'un essaim de drones optimisé]
+1. Allocation dynamique de 10 000 drones
+2. Génération aléatoire des coordonnées flottantes
+3. Tri des drones selon la coordonnée `x` avec `qsort`
+4. Recherche optimisée de la paire la plus proche (Divide & Conquer)
+5. Affichage de la distance minimale et du temps d'exécution
 
-Technologies utilisées
+---
 
-Liste des technologies et standards utilisés pour ce projet d'ingénierie :
+## Optimisation utilisée
 
-Langage C : Standard ISO C99 / C11.
+L'algorithme appliqué est le **Closest Pair of Points** par la méthode **Diviser pour Régner**.
 
-GCC : Version 11.4.0 (Compilateur recommandé).
+Après le tri par `x`, le tableau est découpé récursivement en deux moitiés.
+Chaque moitié est traitée indépendamment, puis on vérifie uniquement les drones
+situés dans une bande centrale de largeur `2 * delta` autour de la frontière.
 
-Bibliothèque Standard : math.h pour les calculs géométriques et stdlib.h pour la gestion dynamique de la mémoire.
+Dans cette bande, les drones sont triés par `y`. La preuve géométrique garantit
+qu'on ne compare jamais plus de **7 voisins** par drone — ce qui rend la bande
+linéaire en `O(n)` au lieu de `O(n²)`.
 
-Installation
+Résultat : la complexité totale est **O(n log n)** au lieu de **O(n²)** pour l'approche naïve.
 
-Le projet est conçu pour être léger et autonome. Aucune dépendance externe n'est requise.
+---
 
-# Cloner le dépôt
-$git clone [https://github.com/votre-compte/uav-collision-system.git$](https://github.com/votre-compte/uav-collision-system.git$) cd uav-collision-system
+## Compilation
 
-# Compiler le code source
-$ gcc -Wall -Wextra -O3 -o systeme_collision main.c -lm
+```bash
+# Avec le Makefile
+make
 
-# Lancer la simulation de sécurité
-$ ./systeme_collision
+# Manuellement
+gcc -Wall -Wextra -O2 -o uav main.c drone.c -lm
+```
 
+---
 
-Note environnementale : Pour une performance optimale sur les processeurs ARM embarqués, l'utilisation du flag d'optimisation -O3 est fortement recommandée.
+## Exécution
 
-Collaboration
+```bash
+./uav
+```
 
-Pour contribuer au développement du module de sécurité :
+Exemple de sortie :
 
-"La sécurité d'un essaim ne dépend pas de la puissance de chaque drone, mais de la précision de leurs interactions."
+```
+===== SYSTEME DE COLLISION UAV =====
 
-Forkez le projet.
+Drone 1 : ID=4854 | x=861.35 | y=201.11 | z=898.48
+Drone 2 : ID=44   | x=860.58 | y=201.93 | z=897.15
 
-Créez une branche dédiée : feature/optimisation-spatiale.
+Distance minimale : 1.739998
+Temps execution   : 4.429000 ms
+```
 
-Important : Assurez-vous qu'aucun crochet [] n'est introduit (le build sera rejeté en cas d'indexation classique).
+---
 
-Soumettez une Pull Request accompagnée d'une analyse de complexité.
+## Technologies utilisées
 
-FAQ
+- Langage C (C99)
+- `malloc` / `free`
+- `qsort`
+- Arithmétique des pointeurs
+- Bibliothèque mathématique (`math.h`)
 
-Pourquoi interdire l'usage des crochets [] ?
-C'est une exigence de sécurité logicielle visant à forcer l'utilisation de l'arithmétique pure des pointeurs, garantissant une manipulation directe et explicite des adresses mémoire dans le tas.
+---
 
-Comment l'algorithme évite-t-il le dépassement de temps (Timeout) ?
-Grâce à une stratégie combinée :
+## Contraintes respectées
 
-Un tri préalable des drones selon l'axe X.
+- Aucun accès avec `[]`
+- Navigation uniquement par pointeurs
+- Allocation dynamique sécurisée avec vérification `NULL`
+- Libération complète de la mémoire
+- Séparation `drone.h` / `drone.c` / `main.c`
+- Complexité O(n log n) garantie
 
-Un mécanisme d'élagage ("pruning") qui interrompt les calculs dès que la distance horizontale dépasse le record de proximité actuel.
+---
 
-Quelle est la précision des calculs ?
-Nous utilisons le type float pour les coordonnées spatiales. Les comparaisons se font sur les distances au carré pour économiser les cycles processeur liés à la fonction sqrt().
+## Auteur
 
-Comparatif de performance
-
-Méthode
-
-Complexité
-
-Temps estimé (10k drones)
-
-Statut
-
-Naïve (Double boucle)
-
-$O(n^2)$
-
-> 100 ms
-
-ÉCHEC (Crash)
-
-Optimisée (Pointeurs + Tri)
-
-$O(n \log n)$
-
-< 2 ms
-
-VALIDÉ
-
-Auteur : Douae Youssef 
+Projet réalisé par **Douae Youssef**  
+Étudiante en première année cycle ingénieur — ESI Rabat

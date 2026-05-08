@@ -1,19 +1,31 @@
-CC = gcc
+CC      = gcc
+CFLAGS  = -Wall -Wextra -O2
+LIBS    = -lm
+TARGET  = uav
+SRCS    = main.c drone.c
+OBJS    = main.o drone.o
 
-CFLAGS = -Wall -Wextra
+# Compilation complete
+all: $(TARGET)
 
-LIBS = -lm
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS) $(LIBS)
 
-EXEC = uav
+main.o: main.c drone.h
+	$(CC) $(CFLAGS) -c main.c
 
-SRC = main.c
+drone.o: drone.c drone.h
+	$(CC) $(CFLAGS) -c drone.c
 
-
-all:
-	$(CC) $(CFLAGS) -o $(EXEC) $(SRC) $(LIBS)
-
-run:
-	./$(EXEC)
-
+# Nettoyage des fichiers objets et binaire
 clean:
-	rm -f $(EXEC)
+	rm -f $(OBJS) $(TARGET)
+
+# Recompilation complete depuis zero
+re: clean all
+
+# Lancement du programme
+run: all
+	./$(TARGET)
+
+.PHONY: all clean re run

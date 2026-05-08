@@ -3,10 +3,10 @@
 #include <float.h>
 #include <stdio.h>
 
-#include "drone.h"
+#include "fichier.h"
 
 /* ============================================
- * drone.c
+ * fichier.c
  * Implementation des fonctions algorithmiques
  * Systeme de detection de collision UAV
  * ============================================ */

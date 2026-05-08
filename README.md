@@ -71,7 +71,7 @@ Résultat : la complexité totale est **O(n log n)** au lieu de **O(n²)** pour 
 make
 
 # Manuellement
-gcc -Wall -Wextra -O2 -o uav main.c drone.c -lm
+gcc -Wall -Wextra -O2 -o uav main.c fichier.c -lm
 ```
 
 ---

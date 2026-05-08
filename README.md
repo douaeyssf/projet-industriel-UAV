@@ -112,7 +112,7 @@ Temps execution   : 4.429000 ms
 - Navigation uniquement par pointeurs
 - Allocation dynamique sécurisée avec vérification `NULL`
 - Libération complète de la mémoire
-- Séparation `drone.h` / `drone.c` / `main.c`
+- Séparation `fichier.h` / `fichier.c` / `main.c`
 - Complexité O(n log n) garantie
 
 ---
@@ -120,4 +120,4 @@ Temps execution   : 4.429000 ms
 ## Auteur
 
 Projet réalisé par **Douae Youssef**  
-Étudiante en première année cycle ingénieur — ESI Rabat
+Étudiante en première année cycle ingénieur ICSD — ESI Rabat

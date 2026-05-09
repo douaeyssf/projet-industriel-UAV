@@ -1,77 +1,55 @@
-# UAV Collision System
+# Système de Collision pour Essaim Autonome (UAV)
 
-Projet réalisé en C dans le cadre du module de **Programmation Avancée en C**.  
-École des Sciences de l'Information — Pr. Tarik HOUICHIME
-
----
-
-## Objectif du projet
-
-Le système simule un essaim de **10 000 drones autonomes** et recherche les deux drones
-les plus proches afin de prévenir les collisions aériennes.
-
-L'objectif principal est d'optimiser les performances tout en respectant des contraintes strictes :
-
-- allocation dynamique avec `malloc`
-- interdiction des crochets `[]`
-- utilisation de l'arithmétique des pointeurs
-- optimisation des comparaisons grâce au tri
+**Auteur :** Douae Youssef  
+**Groupe :** A — Filière ICSD — Numéro : 39  
+**Module :** Programmation Avancée en C — Pr. Tarik HOUICHIME  
+**École :** ESI (École des Sciences de l'Information), Rabat
 
 ---
 
-## Structure utilisée
+## Description
 
-```c
-struct Drone {
-    int   id;
-    float x;
-    float y;
-    float z;
-};
+Ce projet implémente un algorithme de détection de collision pour un essaim de
+10 000 micro-drones autonomes. Il identifie en temps réel les deux drones les
+plus proches l'un de l'autre dans l'espace 3D, afin de déclencher une manœuvre
+d'évitement avant un crash en chaîne.
+
+---
+
+## Structure des fichiers
+
+```
+.
+├── fichier.h     # Définition de struct Drone et déclarations des fonctions
+├── fichier.c     # Algorithme Divide & Conquer, tri, distance
+├── main.c        # Programme principal : allocation, initialisation, affichage
+├── Makefile      # Compilation automatisée
+└── README.md     # Ce fichier
 ```
 
-Chaque drone possède :
-- un identifiant unique
-- une position 3D dans l'espace
-
 ---
 
-## Fonctionnement du programme
+## Contraintes respectées
 
-Le programme effectue les étapes suivantes :
-
-1. Allocation dynamique de 10 000 drones
-2. Génération aléatoire des coordonnées flottantes
-3. Tri des drones selon la coordonnée `x` avec `qsort`
-4. Recherche optimisée de la paire la plus proche (Divide & Conquer)
-5. Affichage de la distance minimale et du temps d'exécution
-
----
-
-## Optimisation utilisée
-
-L'algorithme appliqué est le **Closest Pair of Points** par la méthode **Diviser pour Régner**.
-
-Après le tri par `x`, le tableau est découpé récursivement en deux moitiés.
-Chaque moitié est traitée indépendamment, puis on vérifie uniquement les drones
-situés dans une bande centrale de largeur `2 * delta` autour de la frontière.
-
-Dans cette bande, les drones sont triés par `y`. La preuve géométrique garantit
-qu'on ne compare jamais plus de **7 voisins** par drone — ce qui rend la bande
-linéaire en `O(n)` au lieu de `O(n²)`.
-
-Résultat : la complexité totale est **O(n log n)** au lieu de **O(n²)** pour l'approche naïve.
+- Zéro utilisation des crochets `[]` — arithmétique pure des pointeurs (`*(p+i)`)
+- Allocation dynamique obligatoire avec `malloc` et vérification `NULL`
+- Libération mémoire avec `free` en fin de programme
+- Algorithme en O(n log² n) — Divide & Conquer complet
 
 ---
 
 ## Compilation
 
-```bash
-# Avec le Makefile
-make
+### Avec le Makefile (recommandé)
 
-# Manuellement
-gcc -Wall -Wextra -O2 -o uav main.c fichier.c -lm
+```bash
+make
+```
+
+### Manuellement
+
+```bash
+gcc -Wall -Wextra -std=c99 -o uav main.c fichier.c -lm
 ```
 
 ---
@@ -82,42 +60,54 @@ gcc -Wall -Wextra -O2 -o uav main.c fichier.c -lm
 ./uav
 ```
 
-Exemple de sortie :
+ou via le Makefile :
 
-```
-===== SYSTEME DE COLLISION UAV =====
-
-Drone 1 : ID=4854 | x=861.35 | y=201.11 | z=898.48
-Drone 2 : ID=44   | x=860.58 | y=201.93 | z=897.15
-
-Distance minimale : 1.739998
-Temps execution   : 4.429000 ms
+```bash
+make run
 ```
 
 ---
 
-## Technologies utilisées
+## Exemple de sortie
 
-- Langage C (C99)
-- `malloc` / `free`
-- `qsort`
-- Arithmétique des pointeurs
-- Bibliothèque mathématique (`math.h`)
+```
+===== SYSTEME UAV =====
 
----
+Drone 1 : ID=4821 | x=12.34 | y=567.89 | z=234.56
+Drone 2 : ID=7103 | x=12.41 | y=568.02 | z=234.71
 
-## Contraintes respectées
-
-- Aucun accès avec `[]`
-- Navigation uniquement par pointeurs
-- Allocation dynamique sécurisée avec vérification `NULL`
-- Libération complète de la mémoire
-- Séparation `fichier.h` / `fichier.c` / `main.c`
-- Complexité O(n log n) garantie
+Distance minimale : 0.214631
+Temps execution   : 2.341000 ms
+```
 
 ---
 
-## Auteur
+## Algorithme
 
-Projet réalisé par **Douae Youssef**  
-Étudiante en première année cycle ingénieur ICSD — ESI Rabat
+L'algorithme implémenté est le **Closest Pair of Points** en 3D,
+basé sur le paradigme **Divide & Conquer** :
+
+1. **Tri** du tableau par coordonnée X — O(n log n)
+2. **Division** récursive en deux moitiés égales
+3. **Résolution** récursive sur chaque moitié
+4. **Analyse** d'une tranche centrale (slab 3D) de largeur 2*delta
+5. **Fusion** : conservation du minimum global
+
+**Complexité temporelle :** O(n log² n)  
+**Complexité spatiale :** O(n)
+
+---
+
+## Nettoyage
+
+```bash
+make clean
+```
+
+---
+
+## Environnement de développement
+
+- Système : Ubuntu Linux (VirtualBox)
+- Compilateur : GCC avec flags `-Wall -Wextra -std=c99`
+- Bibliothèques : `<math.h>` (lier avec `-lm`)

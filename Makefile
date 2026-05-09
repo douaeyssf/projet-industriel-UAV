@@ -1,15 +1,16 @@
 CC      = gcc
-CFLAGS  = -Wall -Wextra -O2
-LIBS    = -lm
+CFLAGS  = -Wall -Wextra -std=c99
+LDFLAGS = -lm
 TARGET  = uav
 SRCS    = main.c fichier.c
-OBJS    = main.o fichier.o
+OBJS    = $(SRCS:.c=.o)
 
-# Compilation complete
+.PHONY: all clean run
+
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS) $(LIBS)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS) $(LDFLAGS)
 
 main.o: main.c fichier.h
 	$(CC) $(CFLAGS) -c main.c
@@ -17,15 +18,10 @@ main.o: main.c fichier.h
 fichier.o: fichier.c fichier.h
 	$(CC) $(CFLAGS) -c fichier.c
 
-# Nettoyage des fichiers objets et binaire
+run: $(TARGET)
+	./$(TARGET)
+
 clean:
 	rm -f $(OBJS) $(TARGET)
 
-# Recompilation complete depuis zero
-re: clean all
 
-# Lancement du programme
-run: all
-	./$(TARGET)
-
-.PHONY: all clean re run
